@@ -1,0 +1,20 @@
+{
+  "name": "dynamic-portfolio-cms",
+  "version": "1.0.0",
+  "description": "Dynamic Developer Portfolio with Secure Admin Dashboard/CMS",
+  "main": "server/src/index.js",
+  "scripts": {
+    "install:all": "npm install --prefix server && npm install --prefix client",
+    "dev:server": "npm run dev --prefix server",
+    "dev:client": "npm run dev --prefix client",
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "build": "npm run build --prefix client",
+    "db:seed": "npm run db:seed --prefix server"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  },
+  "dependencies": {
+    "@emailjs/browser": "^4.4.1"
+  }
+}
