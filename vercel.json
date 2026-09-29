@@ -1,16 +1,34 @@
 {
-  "version": 2,
-  "installCommand": "npm install && cd server && npm install && cd ../client && npm install",
-  "buildCommand": "cd server && npx prisma generate && cd ../client && npx vite build",
-  "outputDirectory": "client/dist",
-  "functions": {
-    "api/index.js": {
-      "includeFiles": "server/**"
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "services": {
+    "client": {
+      "root": "client",
+      "framework": "vite"
+    },
+    "server": {
+      "root": "server",
+      "buildCommand": "npx prisma generate",
+      "framework": "express"
     }
   },
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/index.js" },
-    { "source": "/uploads/(.*)", "destination": "/api/index.js" },
-    { "source": "/(.*)", "destination": "/index.html" }
+    {
+      "source": "/api/(.*)",
+      "destination": {
+        "service": "server"
+      }
+    },
+    {
+      "source": "/uploads/(.*)",
+      "destination": {
+        "service": "server"
+      }
+    },
+    {
+      "source": "/(.*)",
+      "destination": {
+        "service": "client"
+      }
+    }
   ]
 }

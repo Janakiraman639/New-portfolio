@@ -51,10 +51,10 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Only start listening when running locally (not on Vercel serverless)
-if (!process.env.VERCEL) {
+// Start listening if running locally or if PORT is assigned (Vercel Services / standalone)
+if (!process.env.VERCEL || process.env.PORT) {
   app.listen(PORT, () => {
-    console.log(`🚀 Server running on http://localhost:${PORT}`);
+    console.log(`🚀 Server running on port ${PORT}`);
   });
 }
 
