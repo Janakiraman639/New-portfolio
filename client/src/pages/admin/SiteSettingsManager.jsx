@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { usePortfolio } from '../../context/PortfolioContext';
+import { useAuth } from '../../context/AuthContext';
 import api from '../../api/axios';
 import {
   Settings,
@@ -13,10 +15,10 @@ import {
   KeyRound,
 } from 'lucide-react';
 
-const DEFAULT_ADMIN_PASSWORD = 'AdminPass123!';
-
 const SiteSettingsManager = () => {
   const { portfolio, refreshPortfolio } = usePortfolio();
+  const { logout } = useAuth();
+  const navigate = useNavigate();
   const settings = portfolio?.siteSettings;
 
   const [form, setForm] = useState({
@@ -83,15 +85,12 @@ const SiteSettingsManager = () => {
   // -----------------------------------------
   // UPDATE ADMIN PASSWORD
   // -----------------------------------------
-  const handlePasswordUpdate = (e) => {
+  const handlePasswordUpdate = async (e) => {
     e.preventDefault();
 
     setPasswordStatus(null);
 
-    const savedPassword =
-      localStorage.getItem('adminPassword') || DEFAULT_ADMIN_PASSWORD;
-
-    // Check current password
+    // Client-side validation
     if (!currentPassword) {
       setPasswordStatus({
         type: 'error',
@@ -100,15 +99,6 @@ const SiteSettingsManager = () => {
       return;
     }
 
-    if (currentPassword !== savedPassword) {
-      setPasswordStatus({
-        type: 'error',
-        message: 'Current password is incorrect.',
-      });
-      return;
-    }
-
-    // Check new password
     if (!newPassword) {
       setPasswordStatus({
         type: 'error',
@@ -125,7 +115,6 @@ const SiteSettingsManager = () => {
       return;
     }
 
-    // Check confirmation
     if (newPassword !== confirmPassword) {
       setPasswordStatus({
         type: 'error',
@@ -134,7 +123,6 @@ const SiteSettingsManager = () => {
       return;
     }
 
-    // Don't allow same password
     if (newPassword === currentPassword) {
       setPasswordStatus({
         type: 'error',
@@ -145,22 +133,34 @@ const SiteSettingsManager = () => {
 
     setPasswordUpdating(true);
 
-    // Save the new password
-    localStorage.setItem('adminPassword', newPassword);
-
-    setTimeout(() => {
-      setPasswordUpdating(false);
-
-      setCurrentPassword('');
-      setNewPassword('');
-      setConfirmPassword('');
-
-      setPasswordStatus({
-        type: 'success',
-        message:
-          'Password updated successfully! Your new password will be required the next time you log in.',
+    try {
+      const res = await api.put('/auth/change-password', {
+        currentPassword,
+        newPassword,
       });
-    }, 500);
+
+      if (res.data.success) {
+        setCurrentPassword('');
+        setNewPassword('');
+        setConfirmPassword('');
+        setPasswordStatus({
+          type: 'success',
+          message: 'Password updated! Redirecting to login...',
+        });
+        // Force re-login after 1.5 seconds
+        setTimeout(() => {
+          logout();
+          navigate('/admin/login');
+        }, 1500);
+      }
+    } catch (err) {
+      setPasswordStatus({
+        type: 'error',
+        message: err.response?.data?.message || 'Failed to update password.',
+      });
+    } finally {
+      setPasswordUpdating(false);
+    }
   };
 
   return (

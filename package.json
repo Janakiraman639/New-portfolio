@@ -9,7 +9,9 @@
     "dev:client": "npm run dev --prefix client",
     "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
     "build": "npm run build --prefix client",
-    "db:seed": "npm run db:seed --prefix server"
+    "db:seed": "npm run db:seed --prefix server",
+    "vercel-build": "cd server && npx prisma generate && cd ../client && npx vite build",
+    "seed:prod": "cd server && npx prisma db push && node prisma/seed.js"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"

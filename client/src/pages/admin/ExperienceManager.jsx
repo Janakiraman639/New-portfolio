@@ -154,131 +154,141 @@ const ExperienceManager = () => {
       </div>
 
       {modal.open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm overflow-y-auto">
-          <div className="glass-card max-w-lg w-full p-6 rounded-2xl border border-slate-800 space-y-4 my-8">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-bold text-white">
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6">
+          <div className="glass-card max-w-xl w-full rounded-2xl border border-slate-800 shadow-2xl flex flex-col max-h-[92vh] overflow-hidden my-auto">
+            {/* Modal Header */}
+            <div className="p-5 sm:p-6 pb-4 border-b border-slate-800/80 flex items-center justify-between shrink-0 bg-slate-950/60">
+              <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                <Briefcase className="w-5 h-5 text-cyan-400" />
                 {modal.mode === 'create' ? 'Add Experience Entry' : 'Edit Experience Entry'}
               </h3>
-              <button onClick={() => setModal({ open: false, mode: 'create', data: null })}>
-                <X className="w-5 h-5 text-slate-400" />
+              <button
+                type="button"
+                onClick={() => setModal({ open: false, mode: 'create', data: null })}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+              >
+                <X className="w-5 h-5" />
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-300">Company Name *</label>
+            {/* Scrollable Form Body */}
+            <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden">
+              <div className="p-5 sm:p-6 overflow-y-auto flex-1 space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-slate-300">Company Name *</label>
+                    <input
+                      type="text"
+                      required
+                      value={form.company}
+                      onChange={(e) => setForm({ ...form, company: e.target.value })}
+                      placeholder="Nexus AI Solutions"
+                      className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-cyan-500"
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-slate-300">Job Role / Title *</label>
+                    <input
+                      type="text"
+                      required
+                      value={form.role}
+                      onChange={(e) => setForm({ ...form, role: e.target.value })}
+                      placeholder="Lead AI Engineer"
+                      className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-cyan-500"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-slate-300">Start Date *</label>
+                    <input
+                      type="text"
+                      required
+                      value={form.startDate}
+                      onChange={(e) => setForm({ ...form, startDate: e.target.value })}
+                      placeholder="2023"
+                      className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-cyan-500"
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-slate-300">End Date</label>
+                    <input
+                      type="text"
+                      disabled={form.isCurrent}
+                      value={form.endDate}
+                      onChange={(e) => setForm({ ...form, endDate: e.target.value })}
+                      placeholder="2024 / Present"
+                      className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-cyan-500 disabled:opacity-50"
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-slate-300">Location</label>
+                    <input
+                      type="text"
+                      value={form.location}
+                      onChange={(e) => setForm({ ...form, location: e.target.value })}
+                      placeholder="Bengaluru, India"
+                      className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-cyan-500"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 pt-1">
                   <input
-                    type="text"
+                    type="checkbox"
+                    id="isCurrent"
+                    checked={form.isCurrent}
+                    onChange={(e) => setForm({ ...form, isCurrent: e.target.checked })}
+                    className="w-4 h-4 rounded border-slate-800 text-cyan-600 focus:ring-cyan-500 bg-slate-950"
+                  />
+                  <label htmlFor="isCurrent" className="text-xs font-semibold text-slate-200 cursor-pointer">
+                    Currently working in this position
+                  </label>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-slate-300">Role Description *</label>
+                  <textarea
                     required
-                    value={form.company}
-                    onChange={(e) => setForm({ ...form, company: e.target.value })}
-                    placeholder="Nexus AI Solutions"
-                    className="w-full px-4 py-2 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-cyan-500"
+                    rows="4"
+                    value={form.description}
+                    onChange={(e) => setForm({ ...form, description: e.target.value })}
+                    placeholder="Responsibilities, technical impact, projects delivered..."
+                    className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-cyan-500 resize-none"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-300">Job Role / Title *</label>
+                  <label className="text-xs font-semibold text-slate-300">Technologies Used (Comma separated)</label>
                   <input
                     type="text"
-                    required
-                    value={form.role}
-                    onChange={(e) => setForm({ ...form, role: e.target.value })}
-                    placeholder="Lead AI Engineer"
-                    className="w-full px-4 py-2 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-cyan-500"
+                    value={form.technologies}
+                    onChange={(e) => setForm({ ...form, technologies: e.target.value })}
+                    placeholder="PyTorch, FastAPI, Kubernetes, Docker"
+                    className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-cyan-500"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-300">Start Date *</label>
-                  <input
-                    type="text"
-                    required
-                    value={form.startDate}
-                    onChange={(e) => setForm({ ...form, startDate: e.target.value })}
-                    placeholder="2023"
-                    className="w-full px-4 py-2 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-cyan-500"
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-300">End Date</label>
-                  <input
-                    type="text"
-                    disabled={form.isCurrent}
-                    value={form.endDate}
-                    onChange={(e) => setForm({ ...form, endDate: e.target.value })}
-                    placeholder="2024 / Present"
-                    className="w-full px-4 py-2 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-cyan-500 disabled:opacity-50"
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-300">Location</label>
-                  <input
-                    type="text"
-                    value={form.location}
-                    onChange={(e) => setForm({ ...form, location: e.target.value })}
-                    placeholder="Bengaluru, India"
-                    className="w-full px-4 py-2 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-cyan-500"
-                  />
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <input
-                  type="checkbox"
-                  id="isCurrent"
-                  checked={form.isCurrent}
-                  onChange={(e) => setForm({ ...form, isCurrent: e.target.checked })}
-                  className="w-4 h-4 rounded border-slate-800 text-cyan-600 focus:ring-cyan-500 bg-slate-950"
-                />
-                <label htmlFor="isCurrent" className="text-xs font-semibold text-slate-200 cursor-pointer">
-                  Currently working in this position
-                </label>
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-xs font-semibold text-slate-300">Role Description *</label>
-                <textarea
-                  required
-                  rows="4"
-                  value={form.description}
-                  onChange={(e) => setForm({ ...form, description: e.target.value })}
-                  placeholder="Responsibilities, technical impact, projects delivered..."
-                  className="w-full px-4 py-2 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-cyan-500 resize-none"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-xs font-semibold text-slate-300">Technologies Used (Comma separated)</label>
-                <input
-                  type="text"
-                  value={form.technologies}
-                  onChange={(e) => setForm({ ...form, technologies: e.target.value })}
-                  placeholder="PyTorch, FastAPI, Kubernetes, Docker"
-                  className="w-full px-4 py-2 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-cyan-500"
-                />
-              </div>
-
-              <div className="pt-3 flex justify-end gap-2 border-t border-slate-800">
+              {/* Fixed Modal Footer */}
+              <div className="p-4 sm:p-5 border-t border-slate-800/80 flex items-center justify-end gap-3 shrink-0 bg-slate-950/80 backdrop-blur-sm">
                 <button
                   type="button"
                   onClick={() => setModal({ open: false, mode: 'create', data: null })}
-                  className="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 text-xs font-semibold"
+                  className="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white text-xs font-semibold transition-colors border border-slate-800"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="px-4 py-2 rounded-xl bg-cyan-600 text-white font-bold text-xs shadow-md shadow-cyan-600/30"
+                  className="px-6 py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs shadow-lg shadow-cyan-600/30 transition-all disabled:opacity-50"
                 >
-                  Save Entry
+                  {loading ? 'Saving...' : 'Save Entry'}
                 </button>
               </div>
             </form>

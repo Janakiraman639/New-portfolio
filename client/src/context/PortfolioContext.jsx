@@ -40,6 +40,15 @@ export const PortfolioProvider = ({ children }) => {
     fetchPortfolio();
   }, [fetchPortfolio]);
 
+  // Auto-refresh every 30 seconds so public view stays in sync with admin changes
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchPortfolio();
+    }, 30000);
+
+    return () => clearInterval(interval);
+  }, [fetchPortfolio]);
+
   return (
     <PortfolioContext.Provider
       value={{

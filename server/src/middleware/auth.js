@@ -23,11 +23,19 @@ const authenticateToken = async (req, res, next) => {
 
     const user = await prisma.user.findUnique({
       where: { id: decoded.userId },
-      select: { id: true, email: true, username: true, role: true },
+      select: { id: true, email: true, username: true, role: true, passwordChangedAt: true },
     });
 
     if (!user) {
       return res.status(401).json({ success: false, message: 'User account no longer exists.' });
+    }
+
+    // If password was changed after this token was issued, reject the token
+    if (user.passwordChangedAt && decoded.iat) {
+      const changedAtSeconds = Math.floor(new Date(user.passwordChangedAt).getTime() / 1000);
+      if (decoded.iat < changedAtSeconds) {
+        return res.status(401).json({ success: false, message: 'Password was changed. Please log in again.' });
+      }
     }
 
     req.user = user;
@@ -38,4 +46,12 @@ const authenticateToken = async (req, res, next) => {
   }
 };
 
-module.exports = { authenticateToken };
+// Role-based authorization: requires ADMIN role
+const requireAdmin = (req, res, next) => {
+  if (!req.user || req.user.role !== 'ADMIN') {
+    return res.status(403).json({ success: false, message: 'Forbidden. Admin privileges required.' });
+  }
+  next();
+};
+
+module.exports = { authenticateToken, requireAdmin };

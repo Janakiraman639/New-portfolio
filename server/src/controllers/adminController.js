@@ -1,5 +1,4 @@
 const prisma = require('../utils/prisma');
-const generateStaticJson = require('../utils/generateStaticJson');
 
 // 1. Dashboard Overview Stats
 const getDashboardStats = async (req, res) => {
@@ -7,8 +6,18 @@ const getDashboardStats = async (req, res) => {
     const projectsCount = await prisma.project.count();
     const skillsCount = await prisma.skill.count();
     const experienceCount = await prisma.experience.count();
+    const educationCount = await prisma.education.count();
+    const certificationsCount = await prisma.certification.count();
     const unreadMessagesCount = await prisma.contactMessage.count({ where: { isRead: false } });
     const totalMessagesCount = await prisma.contactMessage.count();
+
+    // Get the most recent update across key models
+    const latestProject = await prisma.project.findFirst({ orderBy: { updatedAt: 'desc' }, select: { updatedAt: true } });
+    const latestProfile = await prisma.profile.findFirst({ select: { updatedAt: true } });
+    const latestSettings = await prisma.siteSettings.findFirst({ select: { updatedAt: true } });
+
+    const timestamps = [latestProject?.updatedAt, latestProfile?.updatedAt, latestSettings?.updatedAt].filter(Boolean);
+    const lastUpdated = timestamps.length > 0 ? new Date(Math.max(...timestamps.map(t => new Date(t).getTime()))).toISOString() : null;
 
     return res.status(200).json({
       success: true,
@@ -16,12 +25,16 @@ const getDashboardStats = async (req, res) => {
         projectsCount,
         skillsCount,
         experienceCount,
+        educationCount,
+        certificationsCount,
         unreadMessagesCount,
         totalMessagesCount,
+        lastUpdated,
       },
     });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    console.error('Dashboard Stats Error:', error);
+    return res.status(500).json({ success: false, message: 'Failed to fetch dashboard stats.' });
   }
 };
 
@@ -74,8 +87,6 @@ const updateProfile = async (req, res) => {
     return res.status(200).json({ success: true, message: 'Profile updated successfully.', data: updated });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
-  } finally {
-    generateStaticJson().catch(() => {});
   }
 };
 
@@ -89,8 +100,6 @@ const createCategory = async (req, res) => {
     return res.status(201).json({ success: true, data: category });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
-  } finally {
-    generateStaticJson().catch(() => {});
   }
 };
 
@@ -105,8 +114,6 @@ const updateCategory = async (req, res) => {
     return res.status(200).json({ success: true, data: category });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
-  } finally {
-    generateStaticJson().catch(() => {});
   }
 };
 
@@ -117,8 +124,6 @@ const deleteCategory = async (req, res) => {
     return res.status(200).json({ success: true, message: 'Category deleted.' });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
-  } finally {
-    generateStaticJson().catch(() => {});
   }
 };
 
@@ -138,8 +143,6 @@ const createSkill = async (req, res) => {
     return res.status(201).json({ success: true, data: skill });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
-  } finally {
-    generateStaticJson().catch(() => {});
   }
 };
 
@@ -161,8 +164,6 @@ const updateSkill = async (req, res) => {
     return res.status(200).json({ success: true, data: skill });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
-  } finally {
-    generateStaticJson().catch(() => {});
   }
 };
 
@@ -173,8 +174,6 @@ const deleteSkill = async (req, res) => {
     return res.status(200).json({ success: true, message: 'Skill deleted.' });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
-  } finally {
-    generateStaticJson().catch(() => {});
   }
 };
 
@@ -201,8 +200,6 @@ const createProject = async (req, res) => {
     return res.status(201).json({ success: true, data: { ...project, technologies: JSON.parse(project.technologies) } });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
-  } finally {
-    generateStaticJson().catch(() => {});
   }
 };
 
@@ -230,8 +227,6 @@ const updateProject = async (req, res) => {
     return res.status(200).json({ success: true, data: { ...project, technologies: JSON.parse(project.technologies) } });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
-  } finally {
-    generateStaticJson().catch(() => {});
   }
 };
 
@@ -242,8 +237,6 @@ const deleteProject = async (req, res) => {
     return res.status(200).json({ success: true, message: 'Project deleted.' });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
-  } finally {
-    generateStaticJson().catch(() => {});
   }
 };
 
@@ -269,8 +262,6 @@ const createExperience = async (req, res) => {
     return res.status(201).json({ success: true, data: exp });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
-  } finally {
-    generateStaticJson().catch(() => {});
   }
 };
 
@@ -297,8 +288,6 @@ const updateExperience = async (req, res) => {
     return res.status(200).json({ success: true, data: exp });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
-  } finally {
-    generateStaticJson().catch(() => {});
   }
 };
 

@@ -80,7 +80,7 @@ const getProfile = async (req, res) => {
     const profile = await prisma.profile.findFirst();
     return res.status(200).json({ success: true, data: profile });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return res.status(500).json({ success: false, message: 'An internal error occurred.' });
   }
 };
 
@@ -92,7 +92,7 @@ const getSkills = async (req, res) => {
     });
     return res.status(200).json({ success: true, data: categories });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return res.status(500).json({ success: false, message: 'An internal error occurred.' });
   }
 };
 
@@ -108,7 +108,7 @@ const getProjects = async (req, res) => {
     });
     return res.status(200).json({ success: true, data: parsed });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return res.status(500).json({ success: false, message: 'An internal error occurred.' });
   }
 };
 
@@ -124,7 +124,7 @@ const getExperience = async (req, res) => {
     });
     return res.status(200).json({ success: true, data: parsed });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return res.status(500).json({ success: false, message: 'An internal error occurred.' });
   }
 };
 
@@ -133,7 +133,7 @@ const getEducation = async (req, res) => {
     const education = await prisma.education.findMany({ orderBy: { order: 'asc' } });
     return res.status(200).json({ success: true, data: education });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return res.status(500).json({ success: false, message: 'An internal error occurred.' });
   }
 };
 
@@ -142,7 +142,7 @@ const getCertifications = async (req, res) => {
     const certifications = await prisma.certification.findMany({ orderBy: { order: 'asc' } });
     return res.status(200).json({ success: true, data: certifications });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return res.status(500).json({ success: false, message: 'An internal error occurred.' });
   }
 };
 
@@ -151,7 +151,7 @@ const getResume = async (req, res) => {
     const resume = await prisma.resume.findFirst({ where: { isActive: true }, orderBy: { updatedAt: 'desc' } });
     return res.status(200).json({ success: true, data: resume });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return res.status(500).json({ success: false, message: 'An internal error occurred.' });
   }
 };
 
@@ -160,7 +160,7 @@ const getSocialLinks = async (req, res) => {
     const socialLinks = await prisma.socialLink.findMany({ orderBy: { order: 'asc' } });
     return res.status(200).json({ success: true, data: socialLinks });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return res.status(500).json({ success: false, message: 'An internal error occurred.' });
   }
 };
 

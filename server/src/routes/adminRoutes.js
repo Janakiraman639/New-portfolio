@@ -1,7 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const { authenticateToken } = require('../middleware/auth');
+const { authenticateToken, requireAdmin } = require('../middleware/auth');
 const upload = require('../middleware/upload');
+
+// All routes require JWT authentication + ADMIN role
+router.use(authenticateToken);
+router.use(requireAdmin);
 const {
   getDashboardStats,
   updateProfile,
@@ -33,9 +37,6 @@ const {
   updateSiteSettings,
   uploadFile,
 } = require('../controllers/adminController');
-
-// All routes require JWT authentication
-router.use(authenticateToken);
 
 // Dashboard Stats
 router.get('/stats', getDashboardStats);

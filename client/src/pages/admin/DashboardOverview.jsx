@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import api from '../../api/axios';
 import { usePortfolio } from '../../context/PortfolioContext';
-import { Layers, Cpu, Briefcase, Mail, Sparkles, ArrowRight, User, Eye } from 'lucide-react';
+import { Layers, Cpu, Briefcase, Mail, Sparkles, ArrowRight, User, Eye, GraduationCap, Clock } from 'lucide-react';
 
 const DashboardOverview = ({ setActiveTab, onOpenPreview }) => {
   const { portfolio } = usePortfolio();
@@ -9,8 +9,11 @@ const DashboardOverview = ({ setActiveTab, onOpenPreview }) => {
     projectsCount: 0,
     skillsCount: 0,
     experienceCount: 0,
+    educationCount: 0,
+    certificationsCount: 0,
     unreadMessagesCount: 0,
     totalMessagesCount: 0,
+    lastUpdated: null,
   });
 
   useEffect(() => {
@@ -33,6 +36,7 @@ const DashboardOverview = ({ setActiveTab, onOpenPreview }) => {
     { label: 'Total Projects', value: stats.projectsCount, icon: Layers, color: 'text-cyan-400', tab: 'projects' },
     { label: 'Total Skills', value: stats.skillsCount, icon: Cpu, color: 'text-purple-400', tab: 'skills' },
     { label: 'Experience Entries', value: stats.experienceCount, icon: Briefcase, color: 'text-emerald-400', tab: 'experience' },
+    { label: 'Education Entries', value: stats.educationCount, icon: GraduationCap, color: 'text-blue-400', tab: 'education' },
     { label: 'Unread Messages', value: stats.unreadMessagesCount, icon: Mail, color: 'text-amber-400', tab: 'messages' },
   ];
 
@@ -53,6 +57,11 @@ const DashboardOverview = ({ setActiveTab, onOpenPreview }) => {
           <p className="text-slate-400 text-sm">
             All updates saved here automatically propagate to your public portfolio website.
           </p>
+          {stats.lastUpdated && (
+            <p className="text-xs text-slate-500 flex items-center gap-1 mt-1">
+              <Clock className="w-3 h-3" /> Last Updated: {new Date(stats.lastUpdated).toLocaleString()}
+            </p>
+          )}
         </div>
 
         <button

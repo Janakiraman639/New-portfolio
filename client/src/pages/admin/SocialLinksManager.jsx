@@ -137,69 +137,79 @@ const SocialLinksManager = () => {
       </div>
 
       {modal.open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
-          <div className="glass-card max-w-md w-full p-6 rounded-2xl border border-slate-800 space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-bold text-white">
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6">
+          <div className="glass-card max-w-lg w-full rounded-2xl border border-slate-800 shadow-2xl flex flex-col max-h-[92vh] overflow-hidden my-auto">
+            {/* Modal Header */}
+            <div className="p-5 sm:p-6 pb-4 border-b border-slate-800/80 flex items-center justify-between shrink-0 bg-slate-950/60">
+              <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                <Share2 className="w-5 h-5 text-cyan-400" />
                 {modal.mode === 'create' ? 'Add Social Link' : 'Edit Social Link'}
               </h3>
-              <button onClick={() => setModal({ open: false, mode: 'create', data: null })}>
-                <X className="w-5 h-5 text-slate-400" />
+              <button
+                type="button"
+                onClick={() => setModal({ open: false, mode: 'create', data: null })}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+              >
+                <X className="w-5 h-5" />
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-1">
-                <label className="text-xs font-semibold text-slate-300">Platform Name *</label>
-                <input
-                  type="text"
-                  required
-                  value={form.platform}
-                  onChange={(e) => setForm({ ...form, platform: e.target.value })}
-                  placeholder="GitHub / LinkedIn / Twitter"
-                  className="w-full px-4 py-2 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-cyan-500"
-                />
+            {/* Scrollable Form Body */}
+            <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden">
+              <div className="p-5 sm:p-6 overflow-y-auto flex-1 space-y-4">
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-slate-300">Platform Name *</label>
+                  <input
+                    type="text"
+                    required
+                    value={form.platform}
+                    onChange={(e) => setForm({ ...form, platform: e.target.value })}
+                    placeholder="GitHub / LinkedIn / Twitter"
+                    className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-cyan-500"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-slate-300">URL Target *</label>
+                  <input
+                    type="url"
+                    required
+                    value={form.url}
+                    onChange={(e) => setForm({ ...form, url: e.target.value })}
+                    placeholder="https://github.com/username"
+                    className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-cyan-500"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-slate-300">Lucide Icon</label>
+                  <select
+                    value={form.icon}
+                    onChange={(e) => setForm({ ...form, icon: e.target.value })}
+                    className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-cyan-500"
+                  >
+                    {iconOptions.map((opt) => (
+                      <option key={opt} value={opt}>
+                        {opt}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
 
-              <div className="space-y-1">
-                <label className="text-xs font-semibold text-slate-300">URL Target *</label>
-                <input
-                  type="url"
-                  required
-                  value={form.url}
-                  onChange={(e) => setForm({ ...form, url: e.target.value })}
-                  placeholder="https://github.com/username"
-                  className="w-full px-4 py-2 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-cyan-500"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-xs font-semibold text-slate-300">Lucide Icon</label>
-                <select
-                  value={form.icon}
-                  onChange={(e) => setForm({ ...form, icon: e.target.value })}
-                  className="w-full px-4 py-2 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-cyan-500"
-                >
-                  {iconOptions.map((opt) => (
-                    <option key={opt} value={opt}>
-                      {opt}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="pt-2 flex justify-end gap-2">
+              {/* Fixed Modal Footer */}
+              <div className="p-4 sm:p-5 border-t border-slate-800/80 flex items-center justify-end gap-3 shrink-0 bg-slate-950/80 backdrop-blur-sm">
                 <button
                   type="button"
                   onClick={() => setModal({ open: false, mode: 'create', data: null })}
-                  className="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 text-xs font-semibold"
+                  className="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white text-xs font-semibold transition-colors border border-slate-800"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="px-4 py-2 rounded-xl bg-cyan-600 text-white font-bold text-xs shadow-md shadow-cyan-600/30"
+                  className="px-6 py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs shadow-lg shadow-cyan-600/30 transition-all disabled:opacity-50"
                 >
                   Save Link
                 </button>

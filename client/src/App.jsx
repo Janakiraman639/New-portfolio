@@ -21,6 +21,16 @@ function App() {
               {/* Admin Login */}
               <Route path="/admin/login" element={<AdminLogin />} />
 
+              {/* /admin redirects to dashboard (ProtectedRoute will redirect to login if needed) */}
+              <Route
+                path="/admin"
+                element={
+                  <ProtectedRoute>
+                    <Navigate to="/admin/dashboard" replace />
+                  </ProtectedRoute>
+                }
+              />
+
               {/* Protected Admin Dashboard */}
               <Route
                 path="/admin/dashboard/*"

@@ -7,11 +7,12 @@ async function main() {
   console.log('Seeding portfolio database...');
 
   // 1. Create or update Admin User
-  const adminEmail = 'admin@portfolio.com';
+  const adminEmail = process.env.ADMIN_EMAIL || 'admin@portfolio.com';
+  const adminPassword = process.env.ADMIN_INITIAL_PASSWORD || 'AdminPass123!';
   const existingUser = await prisma.user.findUnique({ where: { email: adminEmail } });
 
   if (!existingUser) {
-    const passwordHash = await bcrypt.hash('AdminPass123!', 10);
+    const passwordHash = await bcrypt.hash(adminPassword, 10);
     await prisma.user.create({
       data: {
         email: adminEmail,
@@ -20,7 +21,7 @@ async function main() {
         role: 'ADMIN',
       },
     });
-    console.log('Admin user created: admin@portfolio.com / AdminPass123!');
+    console.log(`Admin user created: ${adminEmail}`);
   }
 
   // 2. Profile

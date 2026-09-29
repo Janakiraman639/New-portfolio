@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { usePortfolio } from '../../context/PortfolioContext';
 import api from '../../api/axios';
 import DynamicIcon from '../../components/DynamicIcon';
-import { Cpu, Plus, Edit2, Trash2, Save, X, CheckCircle2, AlertCircle, Loader2, ChevronUp, ChevronDown } from 'lucide-react';
+import { Cpu, Plus, Edit2, Trash2, Save, X, CheckCircle2, AlertCircle, Loader2, ChevronUp, ChevronDown, FolderPlus } from 'lucide-react';
 
 const SkillsManager = () => {
   const { portfolio, refreshPortfolio } = usePortfolio();
@@ -294,52 +294,59 @@ const SkillsManager = () => {
 
       {/* Category Modal */}
       {categoryModal.open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
-          <div className="glass-card max-w-md w-full p-6 rounded-2xl border border-slate-800 space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-bold text-white">
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6">
+          <div className="glass-card max-w-lg w-full rounded-2xl border border-slate-800 shadow-2xl flex flex-col max-h-[92vh] overflow-hidden my-auto">
+            <div className="p-5 sm:p-6 pb-4 border-b border-slate-800/80 flex items-center justify-between shrink-0 bg-slate-950/60">
+              <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                <FolderPlus className="w-5 h-5 text-cyan-400" />
                 {categoryModal.mode === 'create' ? 'Add Skill Category' : 'Edit Category'}
               </h3>
-              <button onClick={() => setCategoryModal({ open: false, mode: 'create', data: null })}>
-                <X className="w-5 h-5 text-slate-400" />
+              <button
+                type="button"
+                onClick={() => setCategoryModal({ open: false, mode: 'create', data: null })}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+              >
+                <X className="w-5 h-5" />
               </button>
             </div>
 
-            <form onSubmit={handleSaveCategory} className="space-y-4">
-              <div className="space-y-1">
-                <label className="text-xs font-semibold text-slate-300">Category Name *</label>
-                <input
-                  type="text"
-                  required
-                  value={categoryForm.name}
-                  onChange={(e) => setCategoryForm({ ...categoryForm, name: e.target.value })}
-                  placeholder="e.g. AI & Machine Learning"
-                  className="w-full px-4 py-2 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-cyan-500"
-                />
+            <form onSubmit={handleSaveCategory} className="flex flex-col flex-1 overflow-hidden">
+              <div className="p-5 sm:p-6 overflow-y-auto flex-1 space-y-4">
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-slate-300">Category Name *</label>
+                  <input
+                    type="text"
+                    required
+                    value={categoryForm.name}
+                    onChange={(e) => setCategoryForm({ ...categoryForm, name: e.target.value })}
+                    placeholder="e.g. AI & Machine Learning"
+                    className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-cyan-500"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-slate-300">Display Order</label>
+                  <input
+                    type="number"
+                    value={categoryForm.order}
+                    onChange={(e) => setCategoryForm({ ...categoryForm, order: e.target.value })}
+                    className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-cyan-500"
+                  />
+                </div>
               </div>
 
-              <div className="space-y-1">
-                <label className="text-xs font-semibold text-slate-300">Display Order</label>
-                <input
-                  type="number"
-                  value={categoryForm.order}
-                  onChange={(e) => setCategoryForm({ ...categoryForm, order: e.target.value })}
-                  className="w-full px-4 py-2 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-cyan-500"
-                />
-              </div>
-
-              <div className="pt-2 flex justify-end gap-2">
+              <div className="p-4 sm:p-5 border-t border-slate-800/80 flex items-center justify-end gap-3 shrink-0 bg-slate-950/80 backdrop-blur-sm">
                 <button
                   type="button"
                   onClick={() => setCategoryModal({ open: false, mode: 'create', data: null })}
-                  className="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 text-xs font-semibold"
+                  className="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white text-xs font-semibold transition-colors border border-slate-800"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="px-4 py-2 rounded-xl bg-cyan-600 text-white font-bold text-xs shadow-md shadow-cyan-600/30"
+                  className="px-6 py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs shadow-lg shadow-cyan-600/30 transition-all disabled:opacity-50"
                 >
                   Save Category
                 </button>
@@ -351,73 +358,80 @@ const SkillsManager = () => {
 
       {/* Skill Modal */}
       {skillModal.open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
-          <div className="glass-card max-w-md w-full p-6 rounded-2xl border border-slate-800 space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-bold text-white">
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6">
+          <div className="glass-card max-w-lg w-full rounded-2xl border border-slate-800 shadow-2xl flex flex-col max-h-[92vh] overflow-hidden my-auto">
+            <div className="p-5 sm:p-6 pb-4 border-b border-slate-800/80 flex items-center justify-between shrink-0 bg-slate-950/60">
+              <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                <Cpu className="w-5 h-5 text-cyan-400" />
                 {skillModal.mode === 'create' ? 'Add Technical Skill' : 'Edit Skill'}
               </h3>
-              <button onClick={() => setSkillModal({ open: false, mode: 'create', data: null })}>
-                <X className="w-5 h-5 text-slate-400" />
+              <button
+                type="button"
+                onClick={() => setSkillModal({ open: false, mode: 'create', data: null })}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+              >
+                <X className="w-5 h-5" />
               </button>
             </div>
 
-            <form onSubmit={handleSaveSkill} className="space-y-4">
-              <div className="space-y-1">
-                <label className="text-xs font-semibold text-slate-300">Skill Name *</label>
-                <input
-                  type="text"
-                  required
-                  value={skillForm.name}
-                  onChange={(e) => setSkillForm({ ...skillForm, name: e.target.value })}
-                  placeholder="e.g. PyTorch"
-                  className="w-full px-4 py-2 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-cyan-500"
-                />
+            <form onSubmit={handleSaveSkill} className="flex flex-col flex-1 overflow-hidden">
+              <div className="p-5 sm:p-6 overflow-y-auto flex-1 space-y-4">
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-slate-300">Skill Name *</label>
+                  <input
+                    type="text"
+                    required
+                    value={skillForm.name}
+                    onChange={(e) => setSkillForm({ ...skillForm, name: e.target.value })}
+                    placeholder="e.g. PyTorch"
+                    className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-cyan-500"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-slate-300">Category *</label>
+                  <select
+                    required
+                    value={skillForm.categoryId}
+                    onChange={(e) => setSkillForm({ ...skillForm, categoryId: e.target.value })}
+                    className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-cyan-500"
+                  >
+                    {categories.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-slate-300">Lucide Icon Name</label>
+                  <select
+                    value={skillForm.icon}
+                    onChange={(e) => setSkillForm({ ...skillForm, icon: e.target.value })}
+                    className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-cyan-500"
+                  >
+                    {availableIcons.map((ic) => (
+                      <option key={ic} value={ic}>
+                        {ic}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
 
-              <div className="space-y-1">
-                <label className="text-xs font-semibold text-slate-300">Category *</label>
-                <select
-                  required
-                  value={skillForm.categoryId}
-                  onChange={(e) => setSkillForm({ ...skillForm, categoryId: e.target.value })}
-                  className="w-full px-4 py-2 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-cyan-500"
-                >
-                  {categories.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-xs font-semibold text-slate-300">Lucide Icon Name</label>
-                <select
-                  value={skillForm.icon}
-                  onChange={(e) => setSkillForm({ ...skillForm, icon: e.target.value })}
-                  className="w-full px-4 py-2 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-cyan-500"
-                >
-                  {availableIcons.map((ic) => (
-                    <option key={ic} value={ic}>
-                      {ic}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="pt-2 flex justify-end gap-2">
+              <div className="p-4 sm:p-5 border-t border-slate-800/80 flex items-center justify-end gap-3 shrink-0 bg-slate-950/80 backdrop-blur-sm">
                 <button
                   type="button"
                   onClick={() => setSkillModal({ open: false, mode: 'create', data: null })}
-                  className="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 text-xs font-semibold"
+                  className="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white text-xs font-semibold transition-colors border border-slate-800"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="px-4 py-2 rounded-xl bg-cyan-600 text-white font-bold text-xs shadow-md shadow-cyan-600/30"
+                  className="px-6 py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs shadow-lg shadow-cyan-600/30 transition-all disabled:opacity-50"
                 >
                   Save Skill
                 </button>
