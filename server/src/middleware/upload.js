@@ -1,27 +1,7 @@
 const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
 
-// Use /tmp on Vercel (only writable directory in serverless), local uploads dir otherwise
-const uploadsDir = process.env.VERCEL
-  ? '/tmp/uploads'
-  : path.join(__dirname, '../../uploads');
-
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-}
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadsDir);
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    const ext = path.extname(file.originalname);
-    const safeBaseName = path.basename(file.originalname, ext).replace(/[^a-zA-Z0-9]/g, '_');
-    cb(null, `${safeBaseName}-${uniqueSuffix}${ext}`);
-  },
-});
+// In-memory storage allows file processing without depending on ephemeral local disks
+const storage = multer.memoryStorage();
 
 const fileFilter = (req, file, cb) => {
   const allowedMimeTypes = [

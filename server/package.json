@@ -8,7 +8,8 @@
     "dev": "nodemon src/index.js",
     "db:push": "npx prisma db push",
     "db:seed": "node prisma/seed.js",
-    "db:generate": "npx prisma generate"
+    "db:generate": "npx prisma generate",
+    "sync:uploads": "node prisma/syncUploads.js"
   },
   "dependencies": {
     "@prisma/client": "^6.4.1",

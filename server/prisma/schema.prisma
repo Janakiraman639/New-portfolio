@@ -142,3 +142,12 @@ model SiteSettings {
   themeMode       String   @default("dark")
   updatedAt       DateTime @updatedAt
 }
+
+model UploadedFile {
+  id        String   @id @default(uuid())
+  filename  String   @unique
+  mimeType  String
+  data      String   // Base64 encoded file data
+  size      Int
+  createdAt DateTime @default(now())
+}

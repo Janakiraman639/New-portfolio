@@ -1,4 +1,5 @@
 const prisma = require('../utils/prisma');
+const path = require('path');
 
 // 1. Dashboard Overview Stats
 const getDashboardStats = async (req, res) => {
@@ -412,7 +413,22 @@ const uploadResume = async (req, res) => {
       return res.status(400).json({ success: false, message: 'No resume PDF file uploaded.' });
     }
 
-    const fileUrl = `/uploads/${req.file.filename}`;
+    const ext = path.extname(req.file.originalname);
+    const safeBaseName = path.basename(req.file.originalname, ext).replace(/[^a-zA-Z0-9]/g, '_');
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    const filename = `${safeBaseName}-${uniqueSuffix}${ext}`;
+    const base64Data = req.file.buffer ? req.file.buffer.toString('base64') : '';
+
+    await prisma.uploadedFile.create({
+      data: {
+        filename,
+        mimeType: req.file.mimetype,
+        data: base64Data,
+        size: req.file.size,
+      },
+    });
+
+    const fileUrl = `/uploads/${filename}`;
     const title = req.body.title || req.file.originalname;
 
     // Deactivate previous resumes
@@ -543,7 +559,23 @@ const uploadFile = async (req, res) => {
     if (!req.file) {
       return res.status(400).json({ success: false, message: 'No file uploaded.' });
     }
-    const fileUrl = `/uploads/${req.file.filename}`;
+
+    const ext = path.extname(req.file.originalname);
+    const safeBaseName = path.basename(req.file.originalname, ext).replace(/[^a-zA-Z0-9]/g, '_');
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    const filename = `${safeBaseName}-${uniqueSuffix}${ext}`;
+    const base64Data = req.file.buffer ? req.file.buffer.toString('base64') : '';
+
+    await prisma.uploadedFile.create({
+      data: {
+        filename,
+        mimeType: req.file.mimetype,
+        data: base64Data,
+        size: req.file.size,
+      },
+    });
+
+    const fileUrl = `/uploads/${filename}`;
     return res.status(200).json({
       success: true,
       message: 'File uploaded successfully.',

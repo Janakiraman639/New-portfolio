@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const path = require('path');
+const fs = require('fs');
 require('dotenv').config();
 
 const authRoutes = require('./routes/authRoutes');
@@ -26,11 +27,31 @@ app.use(cors({
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Serve uploads directory statically for image/document access
-const uploadsPath = process.env.VERCEL
-  ? '/tmp/uploads'
-  : path.join(__dirname, '../uploads');
-app.use('/uploads', express.static(uploadsPath));
+// Serve uploaded files directly from database (with local disk fallback for dev)
+app.get('/uploads/:filename', async (req, res) => {
+  try {
+    const prisma = require('./utils/prisma');
+    const file = await prisma.uploadedFile.findUnique({
+      where: { filename: req.params.filename },
+    });
+    if (file) {
+      const buffer = Buffer.from(file.data, 'base64');
+      res.setHeader('Content-Type', file.mimeType || 'application/octet-stream');
+      res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+      return res.send(buffer);
+    }
+  } catch (err) {
+    console.error('Error fetching file from database:', err);
+  }
+
+  // Fallback to local uploads directory if present
+  const localFile = path.join(__dirname, '../uploads', req.params.filename);
+  if (fs.existsSync(localFile)) {
+    return res.sendFile(localFile);
+  }
+
+  return res.status(404).json({ success: false, message: 'File not found' });
+});
 
 // Health Check
 app.get('/api/health', async (req, res) => {
